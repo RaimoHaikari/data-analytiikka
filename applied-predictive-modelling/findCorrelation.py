@@ -90,6 +90,10 @@ def findCorrelation(x, cutoff = 0.9, verbose = False):
 
     removed = []
 
+    # Varmistetaan, että aineiston tietotyypit ovat float tyyppisiä
+    if (x.dtypes.values[:, None] == ['int64', 'int32', 'int16', 'int8']).any():
+            x = x.astype(float)
+
     # Irroitetaan arvot Numpy-taulukkoon
     _x = x.values
 
@@ -121,10 +125,11 @@ def findCorrelation(x, cutoff = 0.9, verbose = False):
     for i in range(len(maxAbsCorOrder) - 1):
         iIndx = maxAbsCorOrder[i]
 
-        if np.any(_x > cutoff) == False:
-            print("Ei enää", i)
-        else:
-            print(".", sum(_x > cutoff))
+        # Ota jotenkin käyttöön...
+        # if np.any(_x > cutoff) == False:
+        #    print("Ei enää", i)
+        # else:
+        #    print(".", sum(_x > cutoff))
 
         # Onko sarake jo aiemmin poistettu
         if iIndx in removed:
@@ -177,8 +182,8 @@ segData.drop(matching, axis=1, inplace = True)
 
 corr_mat = segData.corr()
 # corr_mat.style.background_gradient(cmap='coolwarm', axis=None)
-toBeRemoved = findCorrelation(corr_mat, cutoff=0.75)
-print(toBeRemoved)
+# toBeRemoved = findCorrelation(corr_mat, cutoff=0.75)
+# print(toBeRemoved)
 
 #foo = np.array([1.0, 2.0, np.nan, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]).reshape(3,3)
 # print(foo)
@@ -186,3 +191,16 @@ print(toBeRemoved)
 # print(np.any(foo > 9.1))
 
 # print((foo > 9.1))
+
+np.random.seed([3,1415])
+df = pd.DataFrame(
+    np.random.randint(10, size=(10, 10)),
+    columns=list('ABCDEFGHIJ'))
+
+corr = df.corr()
+hc = findCorrelation(corr, cutoff=0.5)
+# print(hc)
+# print(corr.columns[hc])
+
+acorr = corr.abs()
+avg = acorr.mean()
